@@ -5,14 +5,15 @@ In oVirt 4.1.4, we added a new feature called vGPU passthrough. vGPU is a techno
 
 ### Host Requirements
 Update: IOMMU is not needed, vGPU should work even if “Device Passthrough” in the screenshot below is disabled.
+![test](images/ovirt-host.png)
 
-Special requirement is the software - vGPU capable drivers must be installed on each host to be used for vGPU. Search for these at the NVIDIA site, download and install it according to instructions.
+Special requirement is the software - vGPU capable drivers must be installed on each host to be used for vGPU. Search for these at the [NVIDIA site](http://www.nvidia.com/Download/index.aspx), download and install it according to instructions.
 
 Additionally, each vGPU host needs a hook called vdsm-hook-vfio-mdev. The hook is available in oVirt repositories, making the installation as easy as typing
 
-'''
+```
 yum -y install vdsm-hook-vfio-mdev
-'''
+```
 
 ### Guest Requirements
 #### OS Choice
