@@ -59,6 +59,7 @@ vdsm|4.2|1727|55|50|5
 ovirt-ansible|4.2|131|19|12|7
 
 ### 新特性介绍
+- 基于标签的Affinity和Anti-Affinity
 - RHV 4.1+包含Ansible Engine
 - 与Ansible Engine和Ansible Tower集成
 - 灾备
@@ -66,6 +67,8 @@ ovirt-ansible|4.2|131|19|12|7
 - vGPU
 - Metrics与Loging Collectd，ElasticSearch，Fluentd和Kibana
 - 新用户界面
+- 迁移策略
+- Cockpit administration console
 
 ### Ovirt DR
 There are four actions which the user can execute: 
@@ -90,3 +93,9 @@ ID|URL
 5|[NVIDIA Grid vGPU Support in RHV](https://access.redhat.com/solutions/3221241)
 6|[Red Hat Virtualization Reporting Evolution: Transitioning to Metrics Store](https://rhelblog.redhat.com/2017/05/23/red-hat-virtualization-reporting-evolution-transitioning-to-metrics-store/)
 7|[Please Welcome Red Hat Virtualization 4.2](https://rhelblog.redhat.com/2018/05/15/please-welcome-red-hat-virtualization-4-2/)
+8|[Label Based Affinity](https://www.redhat.com/en/blog/red-hat-virtualization-4-new-features-foundational-technology)
+9|[Advanced Live Migration Policies](https://www.redhat.com/en/blog/red-hat-virtualization-4-new-features-foundational-technology)
+10|[RHV Cluster Migration Policy in details](https://access.redhat.com/solutions/3143541)
+11|[PatternFly](http://www.patternfly.org/)
+12|[Red Hat Virtualization 4: Great new Features with the 10th Release – Comparison Matrix updated](https://www.whatmatrix.com/portal/red-hat-virtualization-4-greet-new-features-with-the-10th-release-comparison-matrix-updated/)
+13|[Features by Release](https://www.ovirt.org/develop/release-management/features/)
