@@ -1,0 +1,6 @@
+{
+    "styles": {
+        "website": "styles/website.css"
+    },
+    "plugins": ["todo","anchor-navigation","html5-video"]
+}
