@@ -16,36 +16,6 @@ Release|Start|GA
 4.2|2017-02-01|2017-12-20
 4.2+|2017-12-20|2018-06-21
 
-### ovirt community status
-
-Project|Release|Commits|Commitors|Redhaters|Others 
-:----------:|:-:|:--:|:-:|:-:|:-:
-ovirt-engine|3.5|2466|83|72|11
-ovirt-engine|3.6|4494|92|87|5
-ovirt-engine|4.0|2760|78|74|4
-ovirt-engine|4.1|2889|68|65|3
-ovirt-engine|4.2|3536|84|76|8
-ovirt-engine|4.2+|1384|62|59|3
-ovirt-node|3.5|365|12|8|4
-ovirt-node|3.6|348|8|6|2
-ovirt-node|4.0|63|4|3|1
-ovirt-node|4.1|16|2|2|0
-ovirt-node|4.2|0|0|0|0
-ovirt-node|4.2+|0|0|0|0
-ovirt-ansible|3.5|0|0|0|0
-ovirt-ansible|3.6|0|0|0|0
-ovirt-ansible|4.0|0|0|0|0
-ovirt-ansible|4.1|0|0|0|0
-ovirt-ansible|4.2|131|19|12|7
-ovirt-ansible|4.2+|13|5|4|1
-vdsm|3.5|786|54|44|10
-vdsm|3.6|1684|81|66|15
-vdsm|4.0|1234|63|52|11
-vdsm|4.1|1438|54|50|4
-vdsm|4.2|1727|55|50|5
-vdsm|4.2+|605|42|36|6
-
-
 ### ovirt community status for travelsky
 
 Project|Release|Commits|Commitors|Redhaters|Others 

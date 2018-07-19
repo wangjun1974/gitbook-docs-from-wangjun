@@ -9,4 +9,4 @@ Some of the magic includes:
   * Enable IO Threads, Num Of IO Threads = 1
   * Set the IO and Emulator threads pinning topology
 
-![high_performance_vm](adminportal_compute_vms_new_highperformance.png)
+![high_performance_vm](images/adminportal_compute_vms_new_highperformance.png)
