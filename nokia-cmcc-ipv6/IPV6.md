@@ -693,13 +693,85 @@ resources:
     type: OS::Heat::StructuredConfig
 ``` 
 
+## 配置 undercloud IPv6 地址
+
+```
+# ip addr add 2001:db8::83/64 dev eth1
+
+# cat /etc/sysconfig/network-scripts/ifcfg-eth1
+TYPE=Ethernet
+BOOTPROTO=static
+DEVICE=eth1
+ONBOOT=yes
+IPADDR=192.168.136.83
+PREFIX=27
+GATEWAY=192.168.136.65
+DNS1=192.168.136.82
+IPV6INIT="yes"
+IPV6ADDR="2001:db8::83/64"
+```
+
 ## 配置IPv6 NTP服务
 
 ```
-ip addr add 2001:db8::82/64 dev eth0
-service ntpd restart
+# ip addr add 2001:db8::82/64 dev eth0
+# service ntpd restart
+
+# cat /etc/sysconfig/network-scripts/ifcfg-eth0 
+DEVICE="eth0"
+BOOTPROTO="static"
+ONBOOT="yes"
+TYPE="Ethernet"
+USERCTL="yes"
+PEERDNS="yes"
+IPV6INIT="yes"
+IPADDR=192.168.136.82
+GATEWAY=192.168.136.65
+NETMASK=255.255.255.224
+IPV6ADDR=2001:db8::82/64
+PERSISTENT_DHCLIENT="1"
+```
+
+## 配置 keystone admin api ipv6
+
+```
+  ServiceNetMap:
+    KeystoneAdminApiNetwork: external
 ```
 
 ## 模版
 
 链接: https://pan.baidu.com/s/1SrPCqevPpy39TVv2Ed2nAA 密码: byh6
+
+## CBIS 相关命令
+
+定义 hosts_config 和 user_config
+```
+source ~/stackrc
+cp /usr/share/cbis/cbis-hw/cbis_hw/hosts_config.yaml ~
+```
+
+扫描硬件，导入硬件，配置启动参数，收集硬件信息
+```
+openstack cbis hwscan --input-file ~/hosts_config.yaml --user-config ~/user_config.yaml 
+openstack baremetal import /home/stack/hosts.yaml
+openstack baremetal configure boot
+openstack baremetal introspection bulk start
+```
+
+创建证书，生成模版，部署 overcloud
+```
+/bin/bash /usr/share/cbis/undercloud/tools/tls-prepare-certs.sh
+/bin/bash /usr/share/cbis/undercloud/tools/tls-prepare-barbican-certs.sh
+openstack cbis template generate --platform hp-c7kg8 --destination /home/stack/templates --ssl-certificate server.crt.pem --ssl-key server.key.pem --ssl-root-certificate ca.crt.pem --user-config /home/stack/user_config.yaml
+openstack cbis overcloud deploy --templates ~/templates
+```
+
+删除 overcloud
+```
+openstack stack delete overcloud --wait --yes && openstack overcloud plan delete overcloud && rm overcloudrc overcloud-env.json && rm /tmp/*.lst && sudo rm -f /usr/share/cbis/installation_success
+```
+
+**注意:**
+Command openstack cbis overcloud deploy --templates ~/templates 翻译成 openstack overcloud deploy 会是大概什么形式，以hp-dl380g9为例
+
