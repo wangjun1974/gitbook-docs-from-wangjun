@@ -3,11 +3,11 @@
 ## Case支持情况
 
 |Case No.|Case描述|是否支持|备注|
-|:-------|:-------|:------:|:--:|
+|:-------|:-------|:------:|:---|
 |6.1.3|支持NTP服务|OK|计算节点手工配置ntp指向controller internalapi IPv6地址|
 |6.1.4.1|所有portal登录均支持IPv6方式|POK|OSP支持，其他待诺基亚验证|
 |6.1.4.2|支持告警通过IPv6上报|POK|OSP支持IPv6对接gnocchi，其他待诺基亚验证|
-|6.1.4.6|VIM北向接口的访问入口|POK|identity admin为IPv4，其他为IPv6|
+|6.1.4.6|VIM北向接口的访问入口|OK|identity admin为IPv4，其他为IPv6<br>20180725 - user_config.yml设置enable_tls为false后所有endpoint为ipv6|
 
 
 ### 6.1.3
@@ -78,6 +78,24 @@ server fd00:fd00:fd00:1::18
 
 
 ### 6.1.4.6
+
+**注意：** 在设置enable_tls为false后，identity的adminurl也可为ipv6
+```
+identity
++--------------+-----------------------------------------+
+| Field        | Value                                   |
++--------------+-----------------------------------------+
+| adminurl     | http://[2001:db8::84]:35357/v2.0        |
+| enabled      | True                                    |
+| id           | 88a1acecc5be438080a6b7a82edc37d1        |
+| internalurl  | http://[fd00:fd00:fd00:1::11]:5000/v2.0 |
+| publicurl    | http://[2001:db8::84]:5000/v2.0         |
+| region       | regionOne                               |
+| service_id   | 3da603eb547f4d0aa34398334df357f4        |
+| service_name | keystone                                |
+| service_type | identity                                |
++--------------+-----------------------------------------+
+```
 
 查看 overcloud identity,image,compute,network,volumev2,orchestration endpoint 信息
 ```
@@ -363,6 +381,9 @@ parameter_defaults:
   OvercloudOvsComputeFlavor: OvsCompute
 
   OvercloudStorageFlavor: Storage
+
+  ServiceNetMap:
+    KeystoneAdminApiNetwork: external
 
   # Enable IPv6 for Ceph.
   CephIPv6: True
@@ -741,7 +762,10 @@ PERSISTENT_DHCLIENT="1"
 
 ## 模版
 
-链接: https://pan.baidu.com/s/1SrPCqevPpy39TVv2Ed2nAA 密码: byh6
+20180725 链接: https://pan.baidu.com/s/1nDdeNabutfCEqqfDuYDMYQ 密码:p12g
+<br>
+20180718 链接: https://pan.baidu.com/s/1SrPCqevPpy39TVv2Ed2nAA 密码: byh6
+
 
 ## CBIS 相关命令
 
@@ -765,6 +789,11 @@ openstack baremetal introspection bulk start
 /bin/bash /usr/share/cbis/undercloud/tools/tls-prepare-barbican-certs.sh
 openstack cbis template generate --platform hp-c7kg8 --destination /home/stack/templates --ssl-certificate server.crt.pem --ssl-key server.key.pem --ssl-root-certificate ca.crt.pem --user-config /home/stack/user_config.yaml
 openstack cbis overcloud deploy --templates ~/templates
+```
+
+如果禁用enable_tls，不必生成证书，生成模版的命令为
+```
+openstack cbis template generate --platform hp-c7kg8 --destination /home/stack/templates --user-config /home/stack/user_config.yaml
 ```
 
 删除 overcloud
