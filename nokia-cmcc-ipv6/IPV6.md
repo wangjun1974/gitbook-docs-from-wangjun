@@ -791,16 +791,20 @@ openstack cbis template generate --platform hp-c7kg8 --destination /home/stack/t
 openstack cbis overcloud deploy --templates ~/templates
 ```
 
-如果禁用enable_tls，不必生成证书，生成模版的命令为
+如果禁用enable_tls，生成模版的命令为
 ```
 openstack cbis template generate --platform hp-c7kg8 --destination /home/stack/templates --user-config /home/stack/user_config.yaml
 ```
 
 删除 overcloud
 ```
-openstack stack delete overcloud --wait --yes && openstack overcloud plan delete overcloud && rm overcloudrc overcloud-env.json && rm /tmp/*.lst && sudo rm -f /usr/share/cbis/installation_success
+openstack stack delete overcloud --wait --yes && openstack overcloud plan delete overcloud && rm overcloudrc overcloudrc.v3 overcloud-env.json && rm /tmp/*.lst && sudo rm -f /usr/share/cbis/installation_success
 ```
 
 **注意:**
 Command openstack cbis overcloud deploy --templates ~/templates 翻译成 openstack overcloud deploy 会是大概什么形式，以hp-dl380g9为例
+
+
+## ChangeLog
+* 20180725 enable_tls => false, KeystoneAdminApiNetwork => external
 
