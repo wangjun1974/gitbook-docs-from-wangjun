@@ -1,4 +1,4 @@
 # Summary
 
-* [Intel Demo Lab OSP网络设计](README.md)
+* [Intel Demo Lab OSP网络设计](Demo-Lab.md)
 
