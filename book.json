@@ -5,12 +5,8 @@
     "styles": {
         "website": "styles/website.css"
     },
-    "plugins": ["todo","anchor-navigation","toc"],
+    "plugins": ["todo","anchor-navigation","page-toc"],
     "pluginsConfig": {
-        "toc": {
-             "addClass": true,
-             "className": "toc"
-        },
         "selector": ".markdown-section h1, .markdown-section h2, .markdown-section h3, .markdown-section h4",
         "position": "top",
         "showByDefault": true

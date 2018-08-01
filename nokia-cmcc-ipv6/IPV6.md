@@ -2,13 +2,13 @@
 
 ## Case支持情况
 
-|Case No.|Case描述|是否支持|备注|
-|:-------|:-------|:------:|:---|
-|6.1.3|支持NTP服务|OK|计算节点手工配置ntp指向controller internalapi IPv6地址|
-|6.1.4.1|所有portal登录均支持IPv6方式|POK|OSP支持，其他待诺基亚验证|
-|6.1.4.2|支持告警通过IPv6上报|POK|OSP支持IPv6对接gnocchi，其他待诺基亚验证|
-|6.1.4.6|VIM北向接口的访问入口|OK|identity admin为IPv4，其他为IPv6<br>20180725 - user_config.yml设置enable_tls为false后所有endpoint为ipv6|
-
+|Case No.|Case描述|是否支持|备注|Red Hat CEE Case Number|
+|:-------|:-------|:------:|:---|:---------------------:|
+|6.1.3|支持NTP服务|OK|计算节点手工配置ntp指向controller internalapi IPv6地址||
+|6.1.4.1|所有portal登录均支持IPv6方式|POK|OSP支持，其他待诺基亚验证||
+|6.1.4.2|支持告警通过IPv6上报|POK|OSP支持IPv6对接gnocchi，其他待诺基亚验证||
+|6.1.4.6|VIM北向接口的访问入口|OK|identity admin为IPv4，其他为IPv6<br>20180725 - user_config.yml设置enable_tls为false后所有endpoint为ipv6||
+|6.1.4.11|内部组件通信/存储面数据传输支持IPV6|OK|无法创建实例，已解决|02151129|
 
 ### 6.1.3
 
@@ -192,6 +192,27 @@ orchestration
 +--------------+-----------------------------------------------------+
 ```
 
+### 6.1.4.11
+
+登录控制节点，查看数据库监听地址 
+```
+ss -antp | grep LISTEN | grep mysql
+```
+
+登录控制节点，查看消息队列监听地址
+```
+ss -antp | grep LISTEN | grep beam
+```
+
+存储面地址所在网段
+```
+cat ~/templates/network-environment.yaml | grep '  StorageNetCidr'
+```
+
+登录控制节点和计算节点获得这个网段的 ip 地址，从计算节点 ping 控制节点这个网段的 ip 地址
+
+
+
 
 ## 环境网络配置
 
@@ -214,6 +235,7 @@ orchestration
 |templates/network-environment.yaml|配置 ipv6 相关的Network, Ports, 所需网段，地址范围和其它相关参数|
 |templates/common-environment.yaml|配置 ntp 指向 ipv6 ntp 服务器|
 |templates/network/role_networks/Controller-v6.yaml|配置 ipv4 default route 在 ControlPlane 上，配置 ipv6 default route 在 External 上|
+|templates/network/role_networks/OvsCompute.yaml|配置计算节点可访问 External 网络|
 
 **templates/network-environment.yaml**
 ```
@@ -264,7 +286,7 @@ resource_registry:
 
   
   OS::TripleO::SriovPerformanceCompute::Net::SoftwareConfig:    network/role_networks/SriovPerformanceCompute.yaml
-  OS::TripleO::SriovPerformanceCompute::Ports::ExternalPort:    network/ports/noop.yaml
+  OS::TripleO::SriovPerformanceCompute::Ports::ExternalPort:    network/ports/external_v6.yaml
   OS::TripleO::SriovPerformanceCompute::Ports::InternalApiPort: network/ports/internal_api_v6.yaml
   OS::TripleO::SriovPerformanceCompute::Ports::StorageMgmtPort: network/ports/storage_mgmt_v6.yaml
   OS::TripleO::SriovPerformanceCompute::Ports::StoragePort:     network/ports/storage_v6.yaml
@@ -272,7 +294,7 @@ resource_registry:
 
   
   OS::TripleO::DpdkPerformanceCompute::Net::SoftwareConfig:    network/role_networks/DpdkPerformanceCompute.yaml
-  OS::TripleO::DpdkPerformanceCompute::Ports::ExternalPort:    network/ports/noop.yaml
+  OS::TripleO::DpdkPerformanceCompute::Ports::ExternalPort:    network/ports/external_v6.yaml
   OS::TripleO::DpdkPerformanceCompute::Ports::InternalApiPort: network/ports/internal_api_v6.yaml
   OS::TripleO::DpdkPerformanceCompute::Ports::StorageMgmtPort: network/ports/storage_mgmt_v6.yaml
   OS::TripleO::DpdkPerformanceCompute::Ports::StoragePort:     network/ports/storage_v6.yaml
@@ -280,7 +302,7 @@ resource_registry:
 
     
   OS::TripleO::OvsCompute::Net::SoftwareConfig:    network/role_networks/OvsCompute.yaml
-  OS::TripleO::OvsCompute::Ports::ExternalPort:    network/ports/noop.yaml
+  OS::TripleO::OvsCompute::Ports::ExternalPort:    network/ports/external_v6.yaml
   OS::TripleO::OvsCompute::Ports::InternalApiPort: network/ports/internal_api_v6.yaml
   OS::TripleO::OvsCompute::Ports::StorageMgmtPort: network/ports/storage_mgmt_v6.yaml
   OS::TripleO::OvsCompute::Ports::StoragePort:     network/ports/storage_v6.yaml
@@ -288,7 +310,7 @@ resource_registry:
 
   
   OS::TripleO::Storage::Net::SoftwareConfig:    network/role_networks/Storage.yaml
-  OS::TripleO::Storage::Ports::ExternalPort:    network/ports/noop.yaml
+  OS::TripleO::Storage::Ports::ExternalPort:    network/ports/external_v6.yaml
   OS::TripleO::Storage::Ports::InternalApiPort: network/ports/noop.yaml
   OS::TripleO::Storage::Ports::StorageMgmtPort: network/ports/storage_mgmt_v6.yaml
   OS::TripleO::Storage::Ports::StoragePort:     network/ports/storage_v6.yaml
@@ -761,7 +783,8 @@ PERSISTENT_DHCLIENT="1"
 ```
 
 ## 模版
-
+20180731 链接: https://pan.baidu.com/s/1Kwmr-h-pWuWNpPBtc6wyTg 密码:q3c2
+<br>
 20180725 链接: https://pan.baidu.com/s/1nDdeNabutfCEqqfDuYDMYQ 密码:p12g
 <br>
 20180718 链接: https://pan.baidu.com/s/1SrPCqevPpy39TVv2Ed2nAA 密码: byh6
@@ -806,5 +829,6 @@ Command openstack cbis overcloud deploy --templates ~/templates 翻译成 openst
 
 
 ## ChangeLog
+* 20180731 OvsCompute => add external port  
 * 20180725 enable_tls => false, KeystoneAdminApiNetwork => external
 

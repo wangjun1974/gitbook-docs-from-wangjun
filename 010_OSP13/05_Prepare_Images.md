@@ -1,6 +1,3 @@
-<!-- toc -->
-
-
 ### 准备镜像
 
 
@@ -41,13 +38,17 @@ openstack overcloud container image prepare \
 
 #### 下载镜像
 > ** 注意：确认有足够的空间保存镜像。下载并导出所需空间大约需要20G **
+
+
 ```
 cat local_registry_images.yaml | grep imagename | awk '{print $3}' | sed -e 's,^,docker pull ,g' | tee osp13-image-pull-20180726.sh
 /usr/bin/nohup /bin/bash osp13-image-pull-20180726.sh & 
 ```
 
 #### 保存镜像
+
 脚本
+
 ```
 [stack@undercloud ~]$ cat osp13-image-save-20180726.sh  
 #!/bin/bash
@@ -58,6 +59,7 @@ docker save $(docker images -q) -o /home/stack/images/osp13-images-20180726.tar
 
 
 执行脚本
+
 ```
 /usr/bin/nohup /bin/bash -x osp13-image-save-20180726.sh &
 ```
@@ -65,6 +67,7 @@ docker save $(docker images -q) -o /home/stack/images/osp13-images-20180726.tar
 
 
 #### 生成镜像 Tag 列表
+
 ```
 docker images  | sed '1d' | awk '{print $1 " " $2 " " $3}'  > images/osp13-images-20180726.list
 ```
@@ -72,8 +75,8 @@ docker images  | sed '1d' | awk '{print $1 " " $2 " " $3}'  > images/osp13-image
 
 
 #### 加载镜像
-离线 undercloud docker engine 加载镜像
 
+离线 undercloud docker engine 加载镜像
 
 脚本
 ```
@@ -81,16 +84,14 @@ docker images  | sed '1d' | awk '{print $1 " " $2 " " $3}'  > images/osp13-image
 docker load -i /home/stack/images/osp13-images-20180726.tar 
 ```
 
-
 执行脚本
 ```
 /usr/bin/nohup /bin/bash -x osp13-image-load-20180726.sh &
 ```
 
-
 #### 镜像打 Tag
-离线 undercloud docker engine 镜像打 Tag
 
+离线 undercloud docker engine 镜像打 Tag
 
 脚本
 ```
@@ -104,7 +105,6 @@ do
         docker tag "$IMAGE_ID" $( echo $REPOSITORY | sed -e "s,registry.access.redhat.com,$LOCALREGISTRY," )":$TAG"
 done < /home/stack/images/osp13-images-20180726.list
 ```
-
 
 执行
 ```
@@ -125,7 +125,6 @@ cat templates/overcloud_images.yaml | grep Image | awk '{print $2}'   | sort -u 
 
 
 #### 文件 local_registry_images.yaml
-
 ```
 container_images:
 - imagename: registry.access.redhat.com/rhosp13/openstack-aodh-api:13.0-47
@@ -259,7 +258,7 @@ container_images:
 ```
 
 
-#### 文件overcloud_images.yaml
+#### 文件 overcloud_images.yaml
 ```
 # the following on 2018-07-27T09:38:22.170303
 #
