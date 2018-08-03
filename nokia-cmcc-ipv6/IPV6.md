@@ -7,8 +7,17 @@
 |6.1.3|支持NTP服务|OK|计算节点手工配置ntp指向controller internalapi IPv6地址||
 |6.1.4.1|所有portal登录均支持IPv6方式|POK|OSP支持，其他待诺基亚验证||
 |6.1.4.2|支持告警通过IPv6上报|POK|OSP支持IPv6对接gnocchi，其他待诺基亚验证||
-|6.1.4.6|VIM北向接口的访问入口|OK|identity admin为IPv4，其他为IPv6<br>20180725 - user_config.yml设置enable_tls为false后所有endpoint为ipv6||
-|6.1.4.11|内部组件通信/存储面数据传输支持IPV6|OK|无法创建实例，已解决|02151129|
+|6.1.4.6|VIM北向接口的访问入口|POK|identity admin为IPv4，其他为IPv6<br>20180725: user_config.yml设置enable_tls为false后所有endpoint为ipv6<br>20180803: 在设置dns可支持enable_tls为true后部分endpoint为域名，域名可解析为ipv6地址|02152058<br>已解决|
+|6.1.4.11|内部组件通信/存储面数据传输支持IPV6|OK|无法创建实例|02151129<br>已解决|
+
+### CBIS 18.5 ipv6 与 enable_tls 的情况
+
+|Keystone Admin Url|enable_tls|deployment|overcloud|
+|:-------|:-------|:------:|:---:|
+|ipv4|true|OK|OK|
+|ipv6|false|OK|OK|
+|ipv6|true|OK|NOK|
+|dns+ipv6|true|OK|OK|
 
 ### 6.1.3
 
@@ -73,13 +82,61 @@ server fd00:fd00:fd00:1::18
 | service_type | metric                             |
 +--------------+------------------------------------+
 ```
-**注意**
-* 证书使用 ipv4 地址，访问 https url 时需添加 --insecure 参数
-
 
 ### 6.1.4.6
 
-**注意：** 在设置enable_tls为false后，identity的adminurl也可为ipv6
+**注意：** 在正确设置dns解析后，设置enable_tls为true，identity的adminurl也可为ipv6
+
+**部署需添加以下模版**
+```
+-e ${template_base_dir}/enable-tls.yaml \
+-e ${template_base_dir}/cloudname.yaml \
+-e ${template_base_dir}/inject-trust-anchor.yaml \
+-e ${template_base_dir}/tls-endpoints-public-dns.yaml \
+```
+
+**cloudname.yaml**
+```
+parameter_defaults:
+  CloudName: osp.example.net
+```
+
+**域名解析**
+```
+dig @<dns-server> osp.example.net. AAAA
+```
+
+**注意：参考模版及工具下载地址 链接:https://pan.baidu.com/s/17LEPQDzIvCney4uPa9wHlQ  密码:hhlh **
+
+```
+[stack@undercloud-dl160g8 10]$ for i in identity image compute network volumev2 orchestration; do echo $i ; openstack --insecure endpoint show $i ; echo ; done
+identity
++--------------+-----------------------------------------+
+| Field        | Value                                   |
++--------------+-----------------------------------------+
+| adminurl     | https://osp.example.net:13357/v2.0      |
+| enabled      | True                                    |
+| id           | 85b990f856eb45dcb64e3fcd4b69d3ee        |
+| internalurl  | http://[fd00:fd00:fd00:1::10]:5000/v2.0 |
+| publicurl    | https://osp.example.net:13000/v2.0      |
+| region       | regionOne                               |
+| service_id   | a1848f86ac8d4e6a99f96c9b474790c8        |
+| service_name | keystone                                |
+| service_type | identity                                |
++--------------+-----------------------------------------+
+...
+
+[stack@undercloud-dl160g8 10]$ ping -6 -c 1 osp.example.net
+PING osp.example.net(osp.example.net (2001:db8::84)) 56 data bytes
+64 bytes from osp.example.net (2001:db8::84): icmp_seq=1 ttl=64 time=0.651 ms
+
+--- osp.example.net ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.651/0.651/0.651/0.000 ms
+```
+
+
+**注意：** （已过时）在设置enable_tls为false后，identity的adminurl也可为ipv6
 ```
 identity
 +--------------+-----------------------------------------+
@@ -348,7 +405,7 @@ parameter_defaults:
   ExternalNetCidr: '2001:db8::/64'
   # Leave room for floating IPs in the External allocation pool (if required)
   PublicVirtualFixedIPs: [{'ip_address':'2001:db8::84'}]
-  ExternalAllocationPools: [{'start': '2001:db8::84', 'end': '2001:db8::85'}]
+  ExternalAllocationPools: [{'start': '2001:db8::84', 'end': '2001:db8::200'}]
   # Set to the router gateway on the external network
   ExternalInterfaceDefaultRoute: 2001:db8::83
   ExternalNetworkVlanID: 321
@@ -358,7 +415,7 @@ parameter_defaults:
   EC2MetadataIp: 172.31.255.1
   ControlPlaneDefaultRoute: 172.31.255.1
   NeutronExternalNetworkBridge: "''"
-  #DnsServers: [192.168.136.82]
+  DnsServers: [2001:db8::82]
 
   #BondInterfaceOvsOptions: "bond_mode=balance-tcp lacp=active other-config:lacp-fallback-ab=true"
   #BondInterfaceOvsOptions: "bond_mode=balance-slb lacp=off"
@@ -406,6 +463,8 @@ parameter_defaults:
 
   ServiceNetMap:
     KeystoneAdminApiNetwork: external
+
+  CloudName: osp.example.net
 
   # Enable IPv6 for Ceph.
   CephIPv6: True
