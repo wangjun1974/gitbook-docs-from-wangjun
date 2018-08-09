@@ -888,6 +888,7 @@ Command openstack cbis overcloud deploy --templates ~/templates 翻译成 openst
 
 
 ## ChangeLog
+* 20180803 dns, enable_tls => true, KeystoneAdminApiNetwork => external
 * 20180731 OvsCompute => add external port  
 * 20180725 enable_tls => false, KeystoneAdminApiNetwork => external
 
