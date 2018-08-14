@@ -1,72 +1,5 @@
 # CBIS Dpdk 部署
 
-## 适配 Intel 网卡 OVS-DPDK 的 overcloud-full image 
-
-### 订制镜像
-
-```
-[root@localhost dpdk]# virt-customize -a overcloud-full.qcow2 --copy-in openvswitch-2.7.2-1.git20170719.el7fdp.x86_64.rpm:/root 
-[   0.0] Examining the guest ...
-[   1.9] Setting a random seed
-[   1.9] Copying: openvswitch-2.7.2-1.git20170719.el7fdp.x86_64.rpm to /root
-[   2.0] Finishing off
-
-[root@localhost dpdk]# virt-customize -a overcloud-full.qcow2 --run-command 'rpm -e --nodeps openvswitch' 
-[   0.0] Examining the guest ...
-[   1.9] Setting a random seed
-[   2.0] Running: rpm -e --nodeps openvswitch
-[   3.0] Finishing off
-
-[root@localhost dpdk]# virt-customize -a overcloud-full.qcow2 --run-command 'yum localinstall -y  /root/openvswitch-2.7.2-1.git20170719.el7fdp.x86_64.rpm' 
-[   0.0] Examining the guest ...
-[   2.0] Setting a random seed
-[   2.0] Running: yum localinstall -y  /root/openvswitch-2.7.2-1.git20170719.el7fdp.x86_64.rpm
-[   8.3] Finishing off
-
-[root@localhost dpdk]# virt-customize -a overcloud-full.qcow2 --run-command 'rm -f /root/openvswitch-2.7.2-1.git20170719.el7fdp.x86_64.rpm' --selinux-relabel
-[   0.0] Examining the guest ...
-[   1.9] Setting a random seed
-[   1.9] Running: rm -f /root/openvswitch-2.7.2-1.git20170719.el7fdp.x86_64.rpm
-[   2.0] SELinux relabelling
-[  53.9] Finishing off
-```
-
-
-### 备份 undercloud /home/stack/images 下的 overcloud-full.qcow2
-
-```
-cd /home/stack/images
-cp overcloud-full.qcow2 overcloud-full.qcow2.orig
-```
-
-
-### 上传镜像到 undercloud /home/stack/images 目录
-```
-[root@localhost dpdk]# scp overcloud-full.qcow2 stack@192.167.40.3:~/images                                                                     
-stack@192.167.40.3's password: 
-overcloud-full.qcow2                                                                                            100% 2149MB 144.0MB/s   00:14 
-```
-
-
-### 更新镜像
-```
-source /home/stack/stackrc
-[stack@undercloud images]$ openstack overcloud image upload --update-existing --image-path ~/images/
-Image "overcloud-full-vmlinuz" is up-to-date, skipping.
-Image "overcloud-full-initrd" is up-to-date, skipping.
-Image "overcloud-full" was uploaded.
-+--------------------------------------+----------------+-------------+------------+--------+
-|                  ID                  |      Name      | Disk Format |    Size    | Status |
-+--------------------------------------+----------------+-------------+------------+--------+
-| a82d71d9-7093-4f6d-91c7-1a47ecbe9db3 | overcloud-full |    qcow2    | 2253062144 | active |
-+--------------------------------------+----------------+-------------+------------+--------+
-Image "bm-deploy-kernel" is up-to-date, skipping.
-Image "bm-deploy-ramdisk" is up-to-date, skipping.
-Image file "/httpboot/agent.kernel" is up-to-date, skipping.
-Image file "/httpboot/agent.ramdisk" is up-to-date, skipping.
-```
-
-
 ## 双平面 DPDK 模版改造
 
 ### 需修改的文件
@@ -673,8 +606,7 @@ resources:
 ### 模版
 
 #### DPDK 双平面
-20180809 链接:https://pan.baidu.com/s/1v-7wYf5vaMHm7FXQ83kmWQ  密码:mhab<br>
-20180808 链接:https://pan.baidu.com/s/1NDGM-PvxR-jkBvdqZvobAQ  密码:9mv0
+20180809 链接:https://pan.baidu.com/s/1v-7wYf5vaMHm7FXQ83kmWQ  密码:mhab
 
 #### DPDK 三平面
 20180809 链接:https://pan.baidu.com/s/1uccWFhlLu9QojJ0UhWvisQ  密码:v2yk
