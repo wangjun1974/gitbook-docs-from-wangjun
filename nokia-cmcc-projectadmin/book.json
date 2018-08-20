@@ -1,0 +1,8 @@
+{
+    "title": "CBIS 18.5 Project Admin Role Setting",
+    "author": "Wang Jun",
+    "styles": {
+        "website": "styles/website.css"
+    },
+    "plugins": ["mermaid-flow"]
+}
